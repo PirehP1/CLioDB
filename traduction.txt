@@ -1,0 +1,19 @@
+0) generation du fichier .pot (liste de toutes les clés)
+find . -iname "*.py" | xargs xgettext --from-code=UTF-8 -k_ -kN_ -o dbexplorer.pot
+
+1) installer poedit : http://www.poedit.net/download.php
+
+2) lire manuel : http://www.web-imaginative.com/pot-en-po-wordpress/
+le fichier .pot à utiliser est dbexplorer.pot contenant toutes les "clés" de traduction 
+
+3) créer un nouveau catalogue à partir du .pot cela permettra de créer un fichier .po (et .mo automatiquement) pour une langue données
+ex : dbexplorer.po et dbexplorer.mo faire les traductions
+
+4) copier les fichiers dbexplorer.po et dbexplorer.mo dans locale-folder/fr/LC_MESSAGES
+
+idem pour les autres langues : (anglais par exemple) 
+copier les fichiers dbexplorer.po et dbexplorer.mo dans locale-folder/en/LC_MESSAGES
+
+
+
+

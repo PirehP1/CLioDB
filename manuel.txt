@@ -1,0 +1,4 @@
+l'emplacement des fichiers du manuel d'utilisation se trouve dans le répertoire resources/manuel
+ce sont des fichiers html. Actuellement 3 fichiers d'exemples s'y trouvent.
+
+

@@ -1,0 +1,91 @@
+from copy import deepcopy
+        
+
+class Action():
+    def __init__(self):
+        pass
+    
+    def undo(self):
+        pass
+    
+    def redo(self):
+        pass
+
+
+class ActionsList():
+    def __init__(self,tab):
+        self.tab = tab
+        self.undoActions = [] #todo faire une pile ?
+        self.redoActions = [] #todo faire une pile ?       
+        
+    def addNewAction(self,action):
+        print 'addNewAction'
+        self.undoActions.append(action)
+        for a in self.redoActions:
+            del a
+            
+        self.redoActions = []
+        self.tab.mainWindow.undoActionMenu.setEnabled(True)
+        self.tab.mainWindow.redoActionMenu.setEnabled(False)                
+        
+    
+    def undo(self):
+        #get the last element of the undoList
+        action = self.undoActions.pop()
+        self.redoActions.append(action)
+        action.undo()
+        
+        if len(self.undoActions) == 0:
+            self.tab.mainWindow.undoActionMenu.setEnabled(False)
+        
+        self.tab.mainWindow.redoActionMenu.setEnabled(True)  
+        
+    
+    def redo(self):
+        # get the last element of the redoList
+        action = self.redoActions.pop()
+        self.undoActions.append(action)
+        action.redo()
+        
+        if len(self.redoActions) == 0:
+            self.tab.mainWindow.redoActionMenu.setEnabled(False)
+        
+        self.tab.mainWindow.undoActionMenu.setEnabled(True)
+        
+        
+    
+
+
+class ColumnCheckClickedAction(Action):
+    @staticmethod
+    def addAction(columnItem) :        
+        action = ColumnCheckClickedAction(columnItem)        
+        columnItem.parentItem().view.tab.actionsList.addNewAction(action)
+        
+    def __init__(self,columnItem):
+        #copie de l'etat du systeme avant l'application de l'action                 
+        self.undoInfo = {'columnItem':columnItem,'isInSelect':bool(columnItem.isInSelect),'selectedColumns':list(columnItem.parentItem().view.tab.selectedColumns)}        
+        
+    def undo(self):
+        #redo info computed only if undo is called
+        columnItem = self.undoInfo['columnItem']
+        self.redoInfo = {'columnItem':columnItem,'isInSelect':bool(columnItem.isInSelect),'selectedColumns':list(columnItem.parentItem().view.tab.selectedColumns)}        
+        self.do(self.undoInfo)
+        
+    def redo(self):        
+        self.do(self.redoInfo)
+    
+    def do(self,doinfo):
+        columnItem = doinfo['columnItem']
+        
+        columnItem.isInSelect = bool(doinfo['isInSelect'])
+        columnItem.preventCheckStateChanged = True
+        columnItem.check.setChecked(columnItem.isInSelect)
+        columnItem.preventCheckStateChanged = False
+        
+        columnItem.parentItem().view.tab.selectedColumns = list(doinfo['selectedColumns'])
+        columnItem.update()
+        columnItem.parentItem().view.tab.setDirty(True)
+        columnItem.parentItem().view.tab.executeQuery()
+        
+    
